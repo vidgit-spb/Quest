@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KiddoQuest — мини‑игра для изучения слов</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape shape-one"></div>
+    <div class="bg-shape shape-two"></div>
+    <div class="bg-shape shape-three"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">KQ</div>
+        <div>
+          <div class="brand-title">KiddoQuest</div>
+          <div class="brand-subtitle">Гонка слов для Telegram</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn" data-nav="home">Главная</button>
+        <button class="nav-btn" data-nav="leaderboard">Лидерборд</button>
+        <button class="nav-btn" data-nav="game">Играть</button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section id="home" data-view>
+        <div class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Ежедневные 50 слов · 4 игрока · 15 секунд</p>
+            <h1>Учимся английскому в формате дружеской битвы.</h1>
+            <p class="lead">
+              Каждый день — новая подборка слов. Отвечай быстрее, зарабатывай очки и
+              поднимайся в лидерборде.
+            </p>
+            <div class="hero-actions">
+              <button class="primary" id="start-game">Начать игру</button>
+              <button class="ghost" id="open-stars">Купить звёздочки</button>
+            </div>
+            <div class="hero-stats">
+              <div class="stat">
+                <span>Твои очки</span>
+                <strong id="total-points">0</strong>
+              </div>
+              <div class="stat">
+                <span>Звёздочки</span>
+                <strong id="stars-balance">0 ⭐</strong>
+              </div>
+              <div class="stat">
+                <span>Сегодня бесплатно</span>
+                <strong id="daily-free">50/50 · 1 раз</strong>
+              </div>
+            </div>
+          </div>
+          <div class="hero-art">
+            <div class="mascot-placeholder">
+              <div class="mascot-title">Место для маскота</div>
+              <div class="mascot-note">Добавим позже</div>
+            </div>
+            <div class="hero-card">
+              <h3>Правила матча</h3>
+              <ul>
+                <li>4 игрока, 10 вопросов</li>
+                <li>Очки за скорость: 15 − время ответа</li>
+                <li>1 место: +100, 2: +50, 3: −50, 4: −100</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-row">
+          <div class="panel">
+            <h3>Как начисляем очки</h3>
+            <p>
+              За каждый правильный ответ начисляем <strong>15 − время ответа</strong>.
+              Ошибки дают 0. Итоговое место в матче добавляет бонус/штраф, но общий счёт не
+              падает ниже нуля.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Подсказки</h3>
+            <p>
+              Раз в день — бесплатная 50/50. Повторное использование в матче стоит
+              10⭐, затем 20⭐, 40⭐ и так далее. Подсказка «что чаще выбирают» показывает
+              статистику игроков.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Покупка звёзд</h3>
+            <p>
+              В главном меню есть быстрый доступ к витрине звёзд. Логику оплаты добавим
+              позже — сейчас это визуальная плашка.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="leaderboard" data-view hidden>
+        <div class="section-head">
+          <h2>Лидерборд недели</h2>
+          <p>Топ‑10 игроков по сумме очков.</p>
+        </div>
+        <div class="leaderboard" id="leaderboard-list"></div>
+      </section>
+
+      <section id="game" data-view hidden>
+        <div class="game-header">
+          <div>
+            <div class="game-title">Словесная битва</div>
+            <div class="game-subtitle" id="question-counter">Вопрос 1 / 10</div>
+          </div>
+          <div class="timer" id="timer">15</div>
+        </div>
+
+        <div class="scoreboard" id="scoreboard"></div>
+
+        <div class="question-card">
+          <div class="question-label">Переведи слово:</div>
+          <div class="question-word" id="question-word">loading…</div>
+          <div class="options" id="options"></div>
+        </div>
+
+        <div class="hints">
+          <button class="hint-btn" id="hint-5050">50/50</button>
+          <button class="hint-btn" id="hint-popular">Что выбирают чаще?</button>
+          <div class="hint-balance">Баланс: <span id="stars-inline">0 ⭐</span></div>
+        </div>
+
+        <div class="game-footer">
+          <button class="ghost" id="quit-game">Выйти в меню</button>
+          <div class="round-result" id="round-result"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="stars-modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Купить звёздочки</h3>
+          <button class="close" id="close-stars">Закрыть</button>
+        </div>
+        <div class="stars-grid">
+          <div class="stars-card">
+            <div class="stars-amount">100 ⭐</div>
+            <div class="stars-price">$0.99</div>
+            <button class="primary" disabled>Скоро</button>
+          </div>
+          <div class="stars-card">
+            <div class="stars-amount">250 ⭐</div>
+            <div class="stars-price">$1.99</div>
+            <button class="primary" disabled>Скоро</button>
+          </div>
+          <div class="stars-card">
+            <div class="stars-amount">600 ⭐</div>
+            <div class="stars-price">$3.99</div>
+            <button class="primary" disabled>Скоро</button>
+          </div>
+          <div class="stars-card">
+            <div class="stars-amount">1500 ⭐</div>
+            <div class="stars-price">$7.99</div>
+            <button class="primary" disabled>Скоро</button>
+          </div>
+        </div>
+        <p class="modal-note">
+          В будущем подключим оплату через Telegram Stars. Пока это только интерфейс.
+        </p>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
