@@ -342,6 +342,113 @@ button:active {
   margin-bottom: 16px;
 }
 
+.podium-wrap {
+  display: grid;
+  grid-template-columns: 1fr minmax(180px, 260px);
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: end;
+}
+
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.podium-card {
+  background: white;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  position: relative;
+}
+
+.podium-card.first {
+  border: 2px solid #ffd66b;
+  transform: translateY(-10px);
+}
+
+.podium-card.second {
+  border: 2px solid #cfd6e6;
+}
+
+.podium-card.third {
+  border: 2px solid #f2c4a0;
+}
+
+.podium-rank {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.podium-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 8px auto 10px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #ffb347, #ff6f91);
+}
+
+.podium-name {
+  font-weight: 700;
+}
+
+.podium-score {
+  color: var(--soft-ink);
+  font-weight: 700;
+}
+
+.podium-side {
+  background: white;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.podium-side .side-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.side-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fffaf3;
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.side-card .podium-avatar {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.side-card .podium-name {
+  font-size: 0.95rem;
+}
+
+.side-card .podium-score {
+  font-size: 0.9rem;
+}
+
 .player-card {
   background: white;
   border-radius: 18px;
@@ -561,6 +668,10 @@ button:active {
   .game-footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .podium-wrap {
+    grid-template-columns: 1fr;
   }
 }
 

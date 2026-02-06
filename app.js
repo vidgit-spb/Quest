@@ -41,6 +41,8 @@ const dom = {
   questionCounter: document.getElementById('question-counter'),
   timer: document.getElementById('timer'),
   scoreboard: document.getElementById('scoreboard'),
+  podium: document.getElementById('podium'),
+  podiumSide: document.getElementById('podium-side'),
   questionWord: document.getElementById('question-word'),
   options: document.getElementById('options'),
   hint5050: document.getElementById('hint-5050'),
@@ -200,6 +202,52 @@ const renderScoreboard = () => {
     `;
     dom.scoreboard.appendChild(card);
   });
+  renderPodium();
+};
+
+const getInitials = (name) =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase())
+    .slice(0, 2)
+    .join('');
+
+const renderPodium = () => {
+  const sorted = [...state.players].sort((a, b) => b.score - a.score);
+  const topThree = sorted.slice(0, 3);
+  const fourth = sorted[3];
+
+  dom.podium.innerHTML = '';
+  dom.podiumSide.innerHTML = '';
+
+  const rankLabels = ['1 место', '2 место', '3 место'];
+  const rankClasses = ['first', 'second', 'third'];
+
+  topThree.forEach((player, index) => {
+    const card = document.createElement('div');
+    card.className = `podium-card ${rankClasses[index]}`;
+    card.innerHTML = `
+      <div class="podium-rank">${rankLabels[index]}</div>
+      <div class="podium-avatar">${getInitials(player.name)}</div>
+      <div class="podium-name">${player.name}</div>
+      <div class="podium-score">${player.score} очков</div>
+    `;
+    dom.podium.appendChild(card);
+  });
+
+  if (fourth) {
+    dom.podiumSide.innerHTML = `
+      <div class="side-title">4 место</div>
+      <div class="side-card">
+        <div class="podium-avatar">${getInitials(fourth.name)}</div>
+        <div>
+          <div class="podium-name">${fourth.name}</div>
+          <div class="podium-score">${fourth.score} очков</div>
+        </div>
+      </div>
+    `;
+  }
 };
 
 const resetQuestionState = () => {
