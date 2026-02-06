@@ -1,6 +1,13 @@
+import {
+  TIMER_SECONDS,
+  calculateTimePoints,
+  getFiftyCost,
+  getPlacementReward,
+  applyPlacementBonus
+} from './game-logic.js';
+
 const MATCH_QUESTIONS = 10;
 const DAILY_POOL_SIZE = 50;
-const TIMER_SECONDS = 15;
 
 const LS_KEYS = {
   points: 'kq_points',
@@ -357,11 +364,10 @@ const finishMatch = () => {
 
   const ranking = [...state.players].sort((a, b) => b.score - a.score);
   const position = ranking.findIndex((p) => p.isUser) + 1;
-  const placementRewards = [100, 50, -50, -100];
-  const reward = placementRewards[position - 1] || 0;
+  const reward = getPlacementReward(position);
 
   const currentPoints = loadNumber(LS_KEYS.points, 0);
-  const updated = Math.max(0, currentPoints + reward);
+  const updated = applyPlacementBonus(currentPoints, position);
   saveNumber(LS_KEYS.points, updated);
 
   renderScoreboard();
@@ -388,8 +394,8 @@ const handleAnswer = (selectedIndex) => {
   setOptionsDisabled(true);
 
   const question = getCurrentQuestion();
-  const elapsed = Math.min(TIMER_SECONDS, (Date.now() - state.timerStart) / 1000);
-  const timePoints = Math.max(0, Math.floor(TIMER_SECONDS - elapsed));
+  const elapsed = (Date.now() - state.timerStart) / 1000;
+  const timePoints = calculateTimePoints(elapsed, TIMER_SECONDS);
   const correct = selectedIndex === question.answerIndex;
 
   const user = state.players.find((p) => p.isUser);
@@ -426,11 +432,7 @@ const useFiftyHint = () => {
 
   const today = getTodayKey();
   const dailyFreeUsed = localStorage.getItem(LS_KEYS.dailyFree) === today;
-  let cost = 0;
-
-  if (dailyFreeUsed) {
-    cost = 10 * Math.pow(2, state.paidFiftyUses);
-  }
+  const cost = getFiftyCost({ dailyFreeUsed, paidUses: state.paidFiftyUses });
 
   const stars = loadNumber(LS_KEYS.stars, 0);
   if (cost > 0 && stars < cost) {
@@ -526,12 +528,19 @@ const bindEvents = () => {
     dom.starsModal.hidden = true;
   });
 
+  dom.starsModal.addEventListener('click', (event) => {
+    if (event.target === dom.starsModal) {
+      dom.starsModal.hidden = true;
+    }
+  });
+
   dom.hint5050.addEventListener('click', useFiftyHint);
   dom.hintPopular.addEventListener('click', usePopularHint);
 };
 
 const init = async () => {
   initTelegram();
+  dom.starsModal.hidden = true;
 
   const response = await fetch('./data/questions.json');
   state.questions = await response.json();

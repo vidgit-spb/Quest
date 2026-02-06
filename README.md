@@ -29,6 +29,12 @@ python3 -m http.server 8080
 ```
 Откройте `http://localhost:8080`.
 
+## Тесты
+```bash
+npm test
+```
+Перед каждым `git push` запускаются автотесты через pre‑push hook.
+
 ## Публикация на GitHub Pages
 1. Создайте репозиторий и запушьте содержимое этой папки.
 2. Откройте `Settings → Pages`.
