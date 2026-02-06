@@ -464,6 +464,10 @@ button:active {
   z-index: 30;
 }
 
+.modal[hidden] {
+  display: none;
+}
+
 .modal-content {
   background: white;
   border-radius: var(--radius);
@@ -483,8 +487,21 @@ button:active {
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
 }
 
+.close:hover {
+  background: #f3f3f6;
+}
+
+.close-icon {
+  font-size: 24px;
+  line-height: 1;
+}
 .stars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
