@@ -26,6 +26,7 @@ const state = {
   currentIndex: 0,
   timerId: null,
   timerStart: null,
+  timerEnd: null,
   players: [],
   paidFiftyUses: 0,
   usedFiftyThisQuestion: false,
@@ -302,9 +303,9 @@ const startTimer = () => {
   state.timerEnd = state.timerStart + TIMER_SECONDS * 1000;
 
   const tick = () => {
-    const remainingMs = state.timerEnd - Date.now();
-    const remaining = Math.max(0, remainingMs / 1000);
-    dom.timer.textContent = Math.ceil(remaining);
+    const elapsedSeconds = Math.floor((Date.now() - state.timerStart) / 1000);
+    const remaining = Math.max(0, TIMER_SECONDS - elapsedSeconds);
+    dom.timer.textContent = remaining;
     dom.timer.classList.toggle('danger', remaining <= 5 && remaining > 0);
 
     if (remaining <= 0) {
@@ -313,9 +314,10 @@ const startTimer = () => {
     }
   };
 
+  dom.timer.textContent = TIMER_SECONDS;
   tick();
 
-  state.timerId = setInterval(tick, 100);
+  state.timerId = setInterval(tick, 250);
 };
 
 const getCurrentQuestion = () => state.matchQuestions[state.currentIndex];
