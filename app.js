@@ -61,11 +61,15 @@ const dom = {
 
 const hideStarsModal = () => {
   dom.starsModal.classList.add('is-hidden');
+  dom.starsModal.hidden = true;
+  dom.starsModal.style.display = 'none';
   dom.starsModal.setAttribute('aria-hidden', 'true');
 };
 
 const showStarsModal = () => {
   dom.starsModal.classList.remove('is-hidden');
+  dom.starsModal.hidden = false;
+  dom.starsModal.style.display = 'grid';
   dom.starsModal.setAttribute('aria-hidden', 'false');
 };
 
@@ -288,17 +292,18 @@ const clearTimer = () => {
   }
   state.timerId = null;
   state.timerStart = null;
+  state.timerEnd = null;
   dom.timer.classList.remove('danger');
 };
 
 const startTimer = () => {
   clearTimer();
   state.timerStart = Date.now();
-  dom.timer.textContent = TIMER_SECONDS;
+  state.timerEnd = state.timerStart + TIMER_SECONDS * 1000;
 
-  state.timerId = setInterval(() => {
-    const elapsed = (Date.now() - state.timerStart) / 1000;
-    const remaining = Math.max(0, TIMER_SECONDS - elapsed);
+  const tick = () => {
+    const remainingMs = state.timerEnd - Date.now();
+    const remaining = Math.max(0, remainingMs / 1000);
     dom.timer.textContent = Math.ceil(remaining);
     dom.timer.classList.toggle('danger', remaining <= 5 && remaining > 0);
 
@@ -306,7 +311,11 @@ const startTimer = () => {
       clearTimer();
       handleAnswer(null);
     }
-  }, 100);
+  };
+
+  tick();
+
+  state.timerId = setInterval(tick, 100);
 };
 
 const getCurrentQuestion = () => state.matchQuestions[state.currentIndex];
@@ -406,7 +415,7 @@ const handleAnswer = (selectedIndex) => {
   setOptionsDisabled(true);
 
   const question = getCurrentQuestion();
-  const elapsed = (Date.now() - state.timerStart) / 1000;
+  const elapsed = state.timerStart ? (Date.now() - state.timerStart) / 1000 : TIMER_SECONDS;
   const timePoints = calculateTimePoints(elapsed, TIMER_SECONDS);
   const correct = selectedIndex === question.answerIndex;
 
