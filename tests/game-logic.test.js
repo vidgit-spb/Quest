@@ -6,7 +6,7 @@ import {
   getFiftyCost,
   getPlacementReward,
   applyPlacementBonus
-} from '../game-logic.js';
+} from '../public/game-logic.js';
 
 test('calculateTimePoints uses speed bonus and clamps at zero', () => {
   assert.equal(calculateTimePoints(0, TIMER_SECONDS), 15);

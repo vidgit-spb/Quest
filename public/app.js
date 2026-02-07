@@ -31,7 +31,8 @@ const state = {
   paidFiftyUses: 0,
   usedFiftyThisQuestion: false,
   usedPopularThisQuestion: false,
-  isMatchActive: false
+  isMatchActive: false,
+  user: null
 };
 
 const dom = {
@@ -45,6 +46,9 @@ const dom = {
   starsBalance: document.getElementById('stars-balance'),
   starsInline: document.getElementById('stars-inline'),
   dailyFree: document.getElementById('daily-free'),
+  authStatus: document.getElementById('auth-status'),
+  loginLink: document.getElementById('login-link'),
+  logoutBtn: document.getElementById('logout-btn'),
   leaderboardList: document.getElementById('leaderboard-list'),
   questionCounter: document.getElementById('question-counter'),
   timer: document.getElementById('timer'),
@@ -58,6 +62,55 @@ const dom = {
   quitGame: document.getElementById('quit-game'),
   roundResult: document.getElementById('round-result'),
   toast: document.getElementById('toast')
+};
+
+const setAuthUi = (user) => {
+  if (dom.authStatus) {
+    dom.authStatus.textContent = user ? `Привет, ${user.email}` : '';
+  }
+  if (dom.loginLink) {
+    dom.loginLink.hidden = Boolean(user);
+  }
+  if (dom.logoutBtn) {
+    dom.logoutBtn.hidden = !user;
+  }
+};
+
+const hydrateAuth = async () => {
+  try {
+    const response = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!response.ok) {
+      setAuthUi(null);
+      return;
+    }
+    const data = await response.json();
+    state.user = data.user || null;
+    setAuthUi(state.user);
+    if (data.stats) {
+      saveNumber(LS_KEYS.points, data.stats.points || 0);
+      saveNumber(LS_KEYS.stars, data.stats.stars || 0);
+    }
+  } catch (error) {
+    setAuthUi(null);
+  }
+};
+
+const syncProgress = async () => {
+  if (!state.user) return;
+  try {
+    const payload = {
+      points: loadNumber(LS_KEYS.points, 0),
+      stars: loadNumber(LS_KEYS.stars, 0)
+    };
+    await fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+  } catch (error) {
+    // ignore sync errors
+  }
 };
 
 const hideStarsModal = () => {
@@ -396,6 +449,7 @@ const finishMatch = () => {
   renderScoreboard();
   updateBalances();
   renderLeaderboard();
+  syncProgress();
 
   const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : '🎯';
   showToast(`Матч завершён! Место #${position} ${medal}, бонус ${reward > 0 ? '+' : ''}${reward}`);
@@ -487,6 +541,7 @@ const useFiftyHint = () => {
   state.usedFiftyThisQuestion = true;
   dom.hint5050.disabled = true;
   updateBalances();
+  syncProgress();
   showToast(cost > 0 ? `Подсказка использована за ${cost} ⭐` : 'Подсказка 50/50 использована бесплатно');
 };
 
@@ -559,13 +614,23 @@ const bindEvents = () => {
 
   dom.hint5050.addEventListener('click', useFiftyHint);
   dom.hintPopular.addEventListener('click', usePopularHint);
+
+  if (dom.logoutBtn) {
+    dom.logoutBtn.addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      state.user = null;
+      setAuthUi(null);
+    });
+  }
 };
 
 const init = async () => {
   initTelegram();
   hideStarsModal();
 
-  const response = await fetch('./data/questions.json');
+  await hydrateAuth();
+
+  const response = await fetch('/data/questions.json');
   state.questions = await response.json();
   state.dailyPool = getDailyPool();
 
@@ -575,4 +640,6 @@ const init = async () => {
   showView('home');
 };
 
-init();
+if (dom.startGame) {
+  init();
+}

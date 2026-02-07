@@ -13,7 +13,7 @@
 - Лидерборд недели (демо).
 
 ## База вопросов (1000)
-- Файл: `data/questions.json`.
+- Файл: `public/data/questions.json`.
 - Сгенерировано 1000 вопросов на основе 100 базовых слов (каждое слово повторяется с разными вариантами ответов).
 - Для реального запуска замените базу на уникальные слова и переводы.
 
@@ -22,12 +22,22 @@
 node scripts/generate-questions.js
 ```
 
-## Локальный запуск
-Из‑за `fetch` рекомендуется локальный сервер:
+## Локальный запуск (Next.js)
 ```bash
-python3 -m http.server 8080
+npm install
+npm run dev
 ```
-Откройте `http://localhost:8080`.
+Откройте `http://localhost:3000`.
+
+## Переменные окружения
+Создайте `.env.local`:
+```
+DATABASE_URL=postgres://...
+JWT_SECRET=long_random_secret
+```
+
+## Инициализация базы данных
+Выполните SQL из файла `sql/schema.sql` в вашей Postgres БД.
 
 ## Тесты
 ```bash
@@ -35,12 +45,11 @@ npm test
 ```
 Перед каждым `git push` запускаются автотесты через pre‑push hook.
 
-## Публикация на GitHub Pages
-1. Создайте репозиторий и запушьте содержимое этой папки.
-2. Откройте `Settings → Pages`.
-3. В `Build and deployment` выберите `Deploy from a branch`.
-4. Выберите `main` и папку `/ (root)`.
-5. Сохраните — через минуту появится ссылка вида `https://<username>.github.io/<repo>/`.
+## Деплой на Vercel
+1. Подключите репозиторий в Vercel.
+2. Добавьте переменные окружения `DATABASE_URL`, `JWT_SECRET`.
+3. Запустите SQL из `sql/schema.sql` в вашей Postgres БД.
+4. Деплой произойдёт автоматически.
 
 ## Идеи для следующего шага
 - Подключить Telegram Stars и реальную оплату.

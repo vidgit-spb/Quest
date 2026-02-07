@@ -158,7 +158,7 @@ for (const word of baseWords) {
   if (questions.length >= totalQuestions) break;
 }
 
-const outputPath = path.join(process.cwd(), 'data', 'questions.json');
+const outputPath = path.join(process.cwd(), 'public', 'data', 'questions.json');
 fs.writeFileSync(outputPath, JSON.stringify(questions, null, 2), 'utf8');
 
 console.log(`Generated ${questions.length} questions at ${outputPath}`);
