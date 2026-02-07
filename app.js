@@ -59,6 +59,16 @@ const dom = {
   toast: document.getElementById('toast')
 };
 
+const hideStarsModal = () => {
+  dom.starsModal.classList.add('is-hidden');
+  dom.starsModal.setAttribute('aria-hidden', 'true');
+};
+
+const showStarsModal = () => {
+  dom.starsModal.classList.remove('is-hidden');
+  dom.starsModal.setAttribute('aria-hidden', 'false');
+};
+
 const getTodayKey = () => new Date().toLocaleDateString('en-CA');
 
 const loadNumber = (key, fallback = 0) => {
@@ -278,17 +288,19 @@ const clearTimer = () => {
   }
   state.timerId = null;
   state.timerStart = null;
+  dom.timer.classList.remove('danger');
 };
 
 const startTimer = () => {
+  clearTimer();
   state.timerStart = Date.now();
   dom.timer.textContent = TIMER_SECONDS;
-  clearTimer();
 
   state.timerId = setInterval(() => {
     const elapsed = (Date.now() - state.timerStart) / 1000;
     const remaining = Math.max(0, TIMER_SECONDS - elapsed);
     dom.timer.textContent = Math.ceil(remaining);
+    dom.timer.classList.toggle('danger', remaining <= 5 && remaining > 0);
 
     if (remaining <= 0) {
       clearTimer();
@@ -521,16 +533,16 @@ const bindEvents = () => {
   });
 
   dom.openStars.addEventListener('click', () => {
-    dom.starsModal.hidden = false;
+    showStarsModal();
   });
 
   dom.closeStars.addEventListener('click', () => {
-    dom.starsModal.hidden = true;
+    hideStarsModal();
   });
 
   dom.starsModal.addEventListener('click', (event) => {
     if (event.target === dom.starsModal) {
-      dom.starsModal.hidden = true;
+      hideStarsModal();
     }
   });
 
@@ -540,7 +552,7 @@ const bindEvents = () => {
 
 const init = async () => {
   initTelegram();
-  dom.starsModal.hidden = true;
+  hideStarsModal();
 
   const response = await fetch('./data/questions.json');
   state.questions = await response.json();

@@ -335,6 +335,11 @@ button:active {
   text-align: center;
 }
 
+.timer.danger {
+  background: #ff4d4d;
+  box-shadow: 0 0 0 6px rgba(255, 77, 77, 0.15);
+}
+
 .scoreboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -572,6 +577,10 @@ button:active {
 }
 
 .modal[hidden] {
+  display: none;
+}
+
+.modal.is-hidden {
   display: none;
 }
 
